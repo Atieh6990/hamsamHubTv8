@@ -84,6 +84,7 @@ function App(): React.JSX.Element {
     };
 
     const handleBackPress = () => {
+        
         if (videoShow) {
             stopVideo();
         }
