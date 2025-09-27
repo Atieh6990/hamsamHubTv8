@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en" dir="rtl">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=1920px;">
+    <title>hamsamHub</title>
+    <link>
+</head>
+<body>
+<div id="app">
+</div>
+
+
+<script>
+    // document.write("<script type='text/javascript' src='http://ssn.tvapps.ir/hamsamClient/3.1/build.js?t=" + new Date().getTime() + "'><\/script>");
+
+    var el = document.createElement('script');
+    el.src = 'https://samyar.rasgames.ir/hamsamHub/android/build.js?t=' + new Date().getTime() + '';
+    //el.src = 'https://hamsam-client.tvapps.ir/src/build/build.js?t=' + new Date().getTime() + '';
+    // el.src = 'http://ssn.tvapps.ir/hamsamClient/3.1/build.js?t=' + new Date().getTime() + '';
+
+    document.body.appendChild(el);
+
+    el.onload = function () {
+        console.log('script loaded successfully')
+    }
+
+    el.onerror = function () {
+        console.log('script failed to load');
+        document.addEventListener('keydown', function (e) {
+            console.log('keydown', e)
+            switch (e.keyCode) {
+                case 37: //LEFT arrow
+                    break;
+                case 38: //UP arrow
+                    break;
+                case 39: //RIGHT arrow
+                    break;
+                case 40: //DOWN arrow
+                    break;
+                case 13: //OK button
+                    break;
+                case 10009: //RETURN button
+                case 10182: //EXIT button
+                    console.log('return888888888888888888888888');
+                    // tizen.application.getCurrentApplication().exit();
+                    break;
+                default:
+                    console.log('Key code : ' + e.keyCode);
+                    break;
+            }
+        });
+    }
+</script>
+</body>
+
+</html>
