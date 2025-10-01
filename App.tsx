@@ -24,7 +24,7 @@ function App(): React.JSX.Element {
     const [isPlaying, setIsPlaying] = useState(false);
     const [currentTime, setCurrentTime] = useState(0);
     const [duration, setDuration] = useState(0);
-    let [isInstalled, setIsInstalled] = useState<boolean>(false);
+    const [isInstalled, setIsInstalled] = useState<boolean>(false);
     const sambazarUrl = 'sambazar://openDet/';
     const samBazarPkgName = 'com.sambazar';
 
@@ -84,7 +84,7 @@ function App(): React.JSX.Element {
     };
 
     const handleBackPress = () => {
-        
+
         if (videoShow) {
             stopVideo();
         }
@@ -98,8 +98,9 @@ function App(): React.JSX.Element {
         try {
             SendIntentAndroid.isAppInstalled(packageData.packageName)
                 .then((installed: boolean) => {
+                    // console.log('installed', installed)
                     setIsInstalled(installed);
-                    manageOpenApp(packageData);
+                    manageOpenApp(packageData, installed);
                 })
         } catch (error) {
             setIsInstalled(false);
@@ -114,10 +115,12 @@ function App(): React.JSX.Element {
         //     setIsInstalled(false);
         // }
     };
-    const manageOpenApp = (packageData: any) => {
+    const manageOpenApp = (packageData: any, installed?: boolean) => {
+        // console.log('manageOpenApp', packageData, packageData.packageName, installed)
         const name = packageData.packageName
-        if (isInstalled) {
-            SendIntentAndroid.openApp(name,{}).then(()=>{
+        const status = installed ?? isInstalled;
+        if (status) {
+            SendIntentAndroid.openApp(name, {}).then(() => {
                 // console.log(`${name} opened successfully`);
             })
             // SendIntentAndroid.openApp(name)
@@ -134,7 +137,7 @@ function App(): React.JSX.Element {
         // }
     };
     const openPageOnApp = async (url: string) => {
-        // url = 'filimo://movie?id=152555'
+        // url = 'filimo://movie?id=160685'
         // url = 'namava://www.namava.ir/series/249502-کنت_مونت_کریستو'
         // url = 'tvrecommendation://app/GapFilmTV/gf_tv_id_40202/24130/'
         // url = 'app://tmk.ir/series/103586'
@@ -145,7 +148,7 @@ function App(): React.JSX.Element {
             await Linking.openURL(url);
             // console.log('open : ' + JSON.stringify(supported));
         } else {
-            await SendIntentAndroid.openApp(samBazarPkgName,{}).then(()=>{
+            await SendIntentAndroid.openApp(samBazarPkgName, {}).then(() => {
                 // console.log(`${samBazarPkgName} opened successfully`);
             })
             // await RNLauncherKitHelper.launchApplication(samBazarPkgName);
@@ -168,7 +171,7 @@ function App(): React.JSX.Element {
 
     const handleOnMessage = (event: WebViewMessageEvent) => {
         const {type, data} = JSON.parse(event.nativeEvent.data);
-        // console.log(type, data);
+        // console.log(type+'****'+ JSON.parse(event.nativeEvent.data));
         switch (type) {
             case 'getData':
                 getData();
