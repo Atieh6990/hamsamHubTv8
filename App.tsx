@@ -24,7 +24,7 @@ function App(): React.JSX.Element {
     const [isPlaying, setIsPlaying] = useState(false);
     const [currentTime, setCurrentTime] = useState(0);
     const [duration, setDuration] = useState(0);
-    const [isInstalled, setIsInstalled] = useState<boolean>(false);
+    let [isInstalled, setIsInstalled] = useState<boolean>(false);
     const sambazarUrl = 'sambazar://openDet/';
     const samBazarPkgName = 'com.sambazar';
 
@@ -84,7 +84,6 @@ function App(): React.JSX.Element {
     };
 
     const handleBackPress = () => {
-
         if (videoShow) {
             stopVideo();
         }
@@ -98,7 +97,7 @@ function App(): React.JSX.Element {
         try {
             SendIntentAndroid.isAppInstalled(packageData.packageName)
                 .then((installed: boolean) => {
-                    // console.log('installed', installed)
+                    // console.log(installed)
                     setIsInstalled(installed);
                     manageOpenApp(packageData, installed);
                 })
@@ -116,11 +115,11 @@ function App(): React.JSX.Element {
         // }
     };
     const manageOpenApp = (packageData: any, installed?: boolean) => {
-        // console.log('manageOpenApp', packageData, packageData.packageName, installed)
+        console.log('manageOpenApp', packageData, packageData.packageName, installed)
         const name = packageData.packageName
         const status = installed ?? isInstalled;
         if (status) {
-            SendIntentAndroid.openApp(name, {}).then(() => {
+            SendIntentAndroid.openApp(name,{}).then(()=>{
                 // console.log(`${name} opened successfully`);
             })
             // SendIntentAndroid.openApp(name)
@@ -128,7 +127,8 @@ function App(): React.JSX.Element {
             //         console.log(`${packageName} opened successfully`);
             //     })
         } else {
-            openPageOnApp(sambazarUrl + 'verr=' + packageData.packageVersion + '&package=' + packageData.packageName + '');
+            // openPageOnApp(sambazarUrl + 'verr=' + packageData.packageVersion + '&package=' + packageData.packageName + '');
+            Linking.openURL(sambazarUrl + 'ver=' + packageData.packageVersion + '&package=' + packageData.packageName + '').then(r => {});
         }
         // if (isInstalled) {
         //     RNLauncherKitHelper.launchApplication(packageData.packageName);
@@ -136,21 +136,23 @@ function App(): React.JSX.Element {
         //     openPageOnApp(sambazarUrl + 'ver=' + packageData.packageVersion + '&package=' + packageData.packageName + '');
         // }
     };
-    const openPageOnApp = async (url: string) => {
-        // url = 'filimo://movie?id=160685'
+    const openPageOnApp = async (packageData: any) => {
+        // url = 'filimo://movie?id=152555'
         // url = 'namava://www.namava.ir/series/249502-کنت_مونت_کریستو'
         // url = 'tvrecommendation://app/GapFilmTV/gf_tv_id_40202/24130/'
         // url = 'app://tmk.ir/series/103586'
         // url = 'app://tmk.ir/movies/10076036'
-        const supported = await Linking.canOpenURL(url);
+        const supported = await Linking.canOpenURL(packageData.TvAppLink);
         // console.log('supported', supported, 'url', url);
         if (supported) {
-            await Linking.openURL(url);
+            await Linking.openURL(packageData.TvAppLink);
             // console.log('open : ' + JSON.stringify(supported));
         } else {
-            await SendIntentAndroid.openApp(samBazarPkgName, {}).then(() => {
-                // console.log(`${samBazarPkgName} opened successfully`);
-            })
+            await Linking.openURL(sambazarUrl + 'ver=' + packageData.packageVersion + '&package=' + packageData.packageName + '');
+
+            // await SendIntentAndroid.openApp(samBazarPkgName,{}).then(()=>{
+            //     // console.log(`${samBazarPkgName} opened successfully`);
+            // })
             // await RNLauncherKitHelper.launchApplication(samBazarPkgName);
             // console.log('Don\'t know how to open this URL');
         }
@@ -171,7 +173,7 @@ function App(): React.JSX.Element {
 
     const handleOnMessage = (event: WebViewMessageEvent) => {
         const {type, data} = JSON.parse(event.nativeEvent.data);
-        // console.log(type+'****'+ JSON.parse(event.nativeEvent.data));
+        // console.log(type, data);
         switch (type) {
             case 'getData':
                 getData();
